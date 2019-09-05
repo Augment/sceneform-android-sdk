@@ -74,22 +74,20 @@ public class DetectedARPlanes {
         }
     }
 
-    Comparator<? super Plane> c = (Plane plane1, Plane plane2) -> {
-        float d = plane1.getCenterPose().ty() - plane2.getCenterPose().ty();
-        return d != 0f ? (d < 0 ? -1 : 1) : 0;
-    };
-
     TypedPlanes floorPlanes = new TypedPlanes(Plane.Type.HORIZONTAL_UPWARD_FACING, (Comparator<? super Plane>)((Plane plane1, Plane plane2) -> {
-        float d = plane1.getCenterPose().ty() - plane2.getCenterPose().ty();
-        return d != 0f ? (d < 0 ? -1 : 1) : 0;
+        // sort by increasing height
+        float deltaHeight = plane1.getCenterPose().ty() - plane2.getCenterPose().ty();
+        return deltaHeight != 0f ? (deltaHeight < 0 ? -1 : 1) : 0;
     }));
     TypedPlanes ceilPlanes = new TypedPlanes(Plane.Type.HORIZONTAL_DOWNWARD_FACING, (Comparator<? super Plane>)((Plane plane1, Plane plane2) -> {
-        float d = plane2.getCenterPose().ty() - plane1.getCenterPose().ty();
-        return d != 0f ? (d < 0 ? -1 : 1) : 0;
+        // sort by decreasing height
+        float deltaHeight = plane2.getCenterPose().ty() - plane1.getCenterPose().ty();
+        return deltaHeight != 0f ? (deltaHeight < 0 ? -1 : 1) : 0;
     }));
     TypedPlanes wallPlanes = new TypedPlanes(Plane.Type.VERTICAL, (Comparator<? super Plane>)((Plane plane1, Plane plane2) -> {
-        float d = plane1.getCenterPose().ty() - plane2.getCenterPose().ty();
-        return d != 0f ? (d < 0 ? -1 : 1) : 0;
+        // sort by increasing height
+        float deltaHeight = plane1.getCenterPose().ty() - plane2.getCenterPose().ty();
+        return deltaHeight != 0f ? (deltaHeight < 0 ? -1 : 1) : 0;
     }));
 
     public void update(Collection<Plane> planes) {
