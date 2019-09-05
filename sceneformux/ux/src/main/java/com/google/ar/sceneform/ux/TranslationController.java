@@ -187,7 +187,7 @@ public class TranslationController extends BaseTransformationController<DragGest
     if (movementPlane.getTrackingState() == TrackingState.TRACKING) {
 
       Anchor newAnchor;
-      if (hitResult==null || hitResult.getTrackable()!=lastArPlane) {
+      if (hitResult == null || hitResult.getTrackable() != lastArPlane) {
         newAnchor = movementPlane.createAnchor(movementPlane.getCenterPose());
       } else {
         newAnchor = hitResult.createAnchor();
