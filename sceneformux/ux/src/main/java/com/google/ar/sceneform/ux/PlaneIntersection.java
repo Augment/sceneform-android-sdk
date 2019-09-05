@@ -9,7 +9,8 @@ import com.google.ar.sceneform.math.Vector3;
 
 public class PlaneIntersection {
     public static @Nullable
-    Pose intersect(Plane plane, Ray ray, boolean isInfinite) {
+    @Nullable
+    public static Pose intersect(Plane plane, Ray ray, boolean isInfinite) {
         Vector3 normalizedDirection = ray.getDirection().normalized();
         Pose planeCenterPose = plane.getCenterPose();
         float[] planeYAxis = planeCenterPose.getYAxis();
