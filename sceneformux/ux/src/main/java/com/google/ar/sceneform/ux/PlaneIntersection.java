@@ -8,7 +8,6 @@ import com.google.ar.sceneform.collision.Ray;
 import com.google.ar.sceneform.math.Vector3;
 
 public class PlaneIntersection {
-    public static @Nullable
     @Nullable
     public static Pose intersect(Plane plane, Ray ray, boolean isInfinite) {
         Vector3 normalizedDirection = ray.getDirection().normalized();
