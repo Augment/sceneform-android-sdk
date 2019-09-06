@@ -15,6 +15,8 @@
  */
 package com.google.ar.sceneform.ux;
 
+import androidx.annotation.Nullable;
+
 /**
  * Node that can be selected, translated, rotated, and scaled using gestures from {@link
  * TransformationSystem}.
@@ -25,6 +27,8 @@ public class TransformableNode extends BaseTransformableNode {
   private final RotationController rotationController;
 
   private final DetectedARPlanes detectedARPlanes;
+
+  @Nullable private TransformableNodeListener transformableNodeListener = null;
 
   @SuppressWarnings("initialization") // Suppress @UnderInitialization warning.
   public TransformableNode(TransformationSystem transformationSystem, DetectedARPlanes detectedARPlanes) {
@@ -40,6 +44,16 @@ public class TransformableNode extends BaseTransformableNode {
 
     rotationController = new RotationController(this, transformationSystem.getTwistRecognizer());
     addTransformationController(rotationController);
+  }
+
+  public TransformableNode(TransformableNode other) {
+    this(other.getTransformationSystem(), other.detectedARPlanes);
+
+    this.transformableNodeListener = other.transformableNodeListener;
+
+    translationController.listener = other.translationController.listener;
+    rotationController.listener = other.rotationController.listener;
+    scaleController.listener = other.scaleController.listener;
   }
 
   /** Returns the controller that translates this node using a drag gesture. */
@@ -59,5 +73,12 @@ public class TransformableNode extends BaseTransformableNode {
 
   public DetectedARPlanes getDetectedARPlanes() {
     return detectedARPlanes;
+  }
+
+  public void setTransformableNodeListener(TransformableNodeListener transformableNodeListener) {
+    this.transformableNodeListener = transformableNodeListener;
+    translationController.listener = transformableNodeListener.translationListener;
+    rotationController.listener = transformableNodeListener.rotationListener;
+    scaleController.listener = transformableNodeListener.scaleListener;
   }
 }
