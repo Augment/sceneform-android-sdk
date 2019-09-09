@@ -97,9 +97,9 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
 
     BaseTransformableNode baseTransformableNode = getTransformableNode();
 
-    if (getElasticDelta()==0f && almostEqual(baseTransformableNode.getLocalScale().x, finalScaleValue, 0.01f)) {
+    if (getElasticDelta() == 0f && almostEqual(baseTransformableNode.getLocalScale().x, finalScaleValue, 0.01f)) {
       canUpdate = false;
-      if (null!=listener) {
+      if (null != listener) {
         listener.onMovementEnd(baseTransformableNode);
       }
     }
@@ -113,7 +113,7 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
     BaseTransformableNode baseTransformableNode = getTransformableNode();
     canUpdate = baseTransformableNode.isSelected();
     if (canUpdate) {
-      if (null!=listener) {
+      if (null != listener) {
         listener.onMovementStart(baseTransformableNode);
       }
     }
@@ -134,7 +134,7 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
       gesture.cancel();
     }
 
-    if (null!=listener) {
+    if (null != listener) {
       listener.onMovementUpdate(getTransformableNode());
     }
   }
@@ -176,6 +176,6 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
   }
 
   private boolean almostEqual(Float value1, Float value2, Float equalityRatio) {
-    return (abs(value1) <1e-4 && abs(value2)<1e-4) || abs(value1-value2) / max(abs(value1), abs(value2)) < equalityRatio;
+    return (abs(value1) < 1e-4 && abs(value2) < 1e-4) || abs(value1-value2) / max(abs(value1), abs(value2)) < equalityRatio;
   }
 }

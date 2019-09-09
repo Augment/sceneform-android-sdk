@@ -71,14 +71,14 @@ public class RotationController extends BaseTransformationController<TwistGestur
     BaseTransformableNode baseTransformableNode = getTransformableNode();
     baseTransformableNode.setLocalRotation(localrotation);
 
-    if (null!=listener) {
+    if (null != listener) {
       listener.onMovementStart(baseTransformableNode);
     }
   }
 
   @Override
   public void onEndTransformation(TwistGesture gesture) {
-    if (null!=listener) {
+    if (null != listener) {
       listener.onMovementEnd(getTransformableNode());
     }
   }
