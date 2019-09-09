@@ -35,7 +35,7 @@ public class RotationController extends BaseTransformationController<TwistGestur
     }
   }
 
-  public Settings settings;
+  public Settings settings = new Settings();
 
   @Nullable public MovementListener listener = null;
 
