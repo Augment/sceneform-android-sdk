@@ -24,7 +24,7 @@ import com.google.ar.sceneform.math.Vector3;
  * Manipulates the rotation of a {@link BaseTransformableNode} using a {@link
  * TwistGestureRecognizer}.
  */
-public class RotationController extends BaseTransformationController<TwistGesture> implements MovementController {
+public class RotationController extends BaseTransformationController<TwistGesture> implements InteractionController {
 
   public class Settings {
     // Rate that the node rotates in degrees per degree of twisting.
@@ -37,17 +37,26 @@ public class RotationController extends BaseTransformationController<TwistGestur
 
   public Settings settings = new Settings();
 
-  @Nullable public MovementListener listener = null;
+  @Nullable
+  private InteractionListener listener = null;
 
   public RotationController(
       BaseTransformableNode transformableNode, TwistGestureRecognizer gestureRecognizer) {
     super(transformableNode, gestureRecognizer);
   }
 
+  public void setListener(InteractionListener listener) {
+    this.listener = listener;
+  }
+
+  public InteractionListener getListener() {
+    return listener;
+  }
+
   @Override
   public boolean canStartTransformation(TwistGesture gesture) {
     boolean selected = getTransformableNode().isSelected();
-    if (selected && null!=listener) {
+    if (selected && null != listener) {
       listener.onMovementStart(getTransformableNode());
     }
     return selected;

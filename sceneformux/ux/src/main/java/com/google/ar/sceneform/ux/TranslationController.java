@@ -43,7 +43,7 @@ import java.util.List;
  * DragGestureRecognizer}. If not selected, the {@link BaseTransformableNode} will become selected
  * when the {@link DragGesture} starts.
  */
-public class TranslationController extends BaseTransformationController<DragGesture> implements MovementController {
+public class TranslationController extends BaseTransformationController<DragGesture> implements InteractionController {
   private DetectedARPlanes.TypedPlanes floorPlanes;
 
   @Nullable private HitResult lastArHitResult = null;
@@ -57,7 +57,8 @@ public class TranslationController extends BaseTransformationController<DragGest
 
   private EnumSet<Plane.Type> allowedPlaneTypes = EnumSet.allOf(Plane.Type.class);
 
-  @Nullable public MovementListener listener = null;
+  @Nullable
+  private InteractionListener listener = null;
 
   private static final float LERP_SPEED = 12.0f;
   private static final float POSITION_LENGTH_THRESHOLD = 0.01f;
@@ -80,6 +81,14 @@ public class TranslationController extends BaseTransformationController<DragGest
    */
   public EnumSet<Plane.Type> getAllowedPlaneTypes() {
     return allowedPlaneTypes;
+  }
+
+  public void setListener(InteractionListener listener) {
+    this.listener = listener;
+  }
+
+  public InteractionListener getListener() {
+    return listener;
   }
 
   @Override

@@ -1,7 +1,7 @@
 package com.google.ar.sceneform.ux;
 
 /** Interface to visual when a {@link BaseTransformableNode} is moved. */
-public interface MovementListener {
+public interface InteractionListener {
     /** Called when a {@link BaseTransformableNode} starts to be moved. */
     void onMovementStart(BaseTransformableNode baseTransformableNode);
 

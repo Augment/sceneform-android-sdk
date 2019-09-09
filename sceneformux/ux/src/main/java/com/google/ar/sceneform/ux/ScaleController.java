@@ -30,7 +30,7 @@ import static java.lang.StrictMath.max;
  * PinchGestureRecognizer}. Applies a tunable elastic bounce-back when scaling the {@link
  * BaseTransformableNode} beyond the min/max scale.
  */
-public class ScaleController extends BaseTransformationController<PinchGesture> implements MovementController {
+public class ScaleController extends BaseTransformationController<PinchGesture> implements InteractionController {
 
   public class Settings {
 
@@ -60,13 +60,22 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
   private static final float ELASTIC_RATIO_LIMIT = 0.8f;
   private static final float LERP_SPEED = 8.0f;
 
-  @Nullable public MovementListener listener = null;
+  @Nullable
+  private InteractionListener listener = null;
 
   private boolean canUpdate = false;
 
   public ScaleController(
       BaseTransformableNode transformableNode, PinchGestureRecognizer gestureRecognizer) {
     super(transformableNode, gestureRecognizer);
+  }
+
+  public void setListener(InteractionListener listener) {
+    this.listener = listener;
+  }
+
+  public InteractionListener getListener() {
+    return listener;
   }
 
   @Override

@@ -5,70 +5,78 @@ import androidx.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class TransformableNodeListener implements TransformationListener {
-    public MovementListener translationListener;
-    public MovementListener rotationListener;
-    public MovementListener scaleListener;
+    public InteractionListener translationListener;
+    public InteractionListener rotationListener;
+    public InteractionListener scaleListener;
 
     @Nullable
-    public TransformationListener transformationListener = null;
+    private TransformationListener transformationListener = null;
 
     public TransformableNodeListener() {
         TransformableNodeListener self = this;
 
-        translationListener = new MovementListener() {
+        translationListener = new InteractionListener() {
             @Override
             public void onMovementStart(BaseTransformableNode baseTransformableNode) {
-                CallOnTransformableNode(baseTransformableNode, self::onTranslationStart);
+                callOnTransformableNode(baseTransformableNode, self::onTranslationStart);
             }
 
             @Override
             public void onMovementUpdate(BaseTransformableNode baseTransformableNode) {
-                CallOnTransformableNode(baseTransformableNode, self::onTranslationUpdate);
+                callOnTransformableNode(baseTransformableNode, self::onTranslationUpdate);
             }
 
             @Override
             public void onMovementEnd(BaseTransformableNode baseTransformableNode) {
-                CallOnTransformableNode(baseTransformableNode, self::onTranslationEnd);
+                callOnTransformableNode(baseTransformableNode, self::onTranslationEnd);
             }
         };
 
-        rotationListener = new MovementListener() {
+        rotationListener = new InteractionListener() {
             @Override
             public void onMovementStart(BaseTransformableNode baseTransformableNode) {
-                CallOnTransformableNode(baseTransformableNode, self::onRotationStart);
+                callOnTransformableNode(baseTransformableNode, self::onRotationStart);
             }
 
             @Override
             public void onMovementUpdate(BaseTransformableNode baseTransformableNode) {
-                CallOnTransformableNode(baseTransformableNode, self::onRotationUpdate);
+                callOnTransformableNode(baseTransformableNode, self::onRotationUpdate);
             }
 
             @Override
             public void onMovementEnd(BaseTransformableNode baseTransformableNode) {
-                CallOnTransformableNode(baseTransformableNode, self::onRotationEnd);
+                callOnTransformableNode(baseTransformableNode, self::onRotationEnd);
             }
         };
 
-        scaleListener = new MovementListener() {
+        scaleListener = new InteractionListener() {
             @Override
             public void onMovementStart(BaseTransformableNode baseTransformableNode) {
-                CallOnTransformableNode(baseTransformableNode, self::onScalingStart);
+                callOnTransformableNode(baseTransformableNode, self::onScalingStart);
             }
 
             @Override
             public void onMovementUpdate(BaseTransformableNode baseTransformableNode) {
-                CallOnTransformableNode(baseTransformableNode, self::onScalingUpdate);
+                callOnTransformableNode(baseTransformableNode, self::onScalingUpdate);
             }
 
             @Override
             public void onMovementEnd(BaseTransformableNode baseTransformableNode) {
-                CallOnTransformableNode(baseTransformableNode, self::onScalingEnd);
+                callOnTransformableNode(baseTransformableNode, self::onScalingEnd);
             }
         };
     }
 
+    public void setTransformationListener(TransformationListener transformationListener) {
+        this.transformationListener = transformationListener;
+    }
+
+    public TransformationListener getTransformationListener() {
+        return transformationListener;
+    }
+
     public void onTranslationStart(TransformableNode transformableNode) {
-        if (null!=transformationListener) {
+        if (null != transformationListener) {
             transformationListener.onTranslationStart(transformableNode);
         }
     }
@@ -80,13 +88,13 @@ public class TransformableNodeListener implements TransformationListener {
     }
 
     public void onTranslationEnd(TransformableNode transformableNode) {
-        if (null!=transformationListener) {
+        if (null != transformationListener) {
             transformationListener.onTranslationEnd(transformableNode);
         }
     }
 
     public void onRotationStart(TransformableNode transformableNode) {
-        if (null!=transformationListener) {
+        if (null != transformationListener) {
             transformationListener.onRotationStart(transformableNode);
         }
     }
@@ -119,7 +127,7 @@ public class TransformableNodeListener implements TransformationListener {
         }
     }
 
-    private void CallOnTransformableNode(BaseTransformableNode baseTransformableNode, Consumer<TransformableNode> fn) {
+    private void callOnTransformableNode(BaseTransformableNode baseTransformableNode, Consumer<TransformableNode> fn) {
         if (baseTransformableNode instanceof TransformableNode) {
             fn.accept((TransformableNode)baseTransformableNode);
         }
