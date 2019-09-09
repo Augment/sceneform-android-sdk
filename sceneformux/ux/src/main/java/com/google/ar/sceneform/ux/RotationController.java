@@ -15,6 +15,8 @@
  */
 package com.google.ar.sceneform.ux;
 
+import androidx.annotation.Nullable;
+
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
 
@@ -22,38 +24,62 @@ import com.google.ar.sceneform.math.Vector3;
  * Manipulates the rotation of a {@link BaseTransformableNode} using a {@link
  * TwistGestureRecognizer}.
  */
-public class RotationController extends BaseTransformationController<TwistGesture> {
+public class RotationController extends BaseTransformationController<TwistGesture> implements InteractionController {
 
-  // Rate that the node rotates in degrees per degree of twisting.
-  private float rotationRateDegrees = 2.5f;
+  public class Settings {
+    // Rate that the node rotates in degrees per degree of twisting.
+    float rotationRateDegrees = 2.5f;
+
+    void from(Settings other) {
+      this.rotationRateDegrees = other.rotationRateDegrees;
+    }
+  }
+
+  public Settings settings = new Settings();
+
+  @Nullable
+  private InteractionListener listener = null;
 
   public RotationController(
       BaseTransformableNode transformableNode, TwistGestureRecognizer gestureRecognizer) {
     super(transformableNode, gestureRecognizer);
   }
 
-  public void setRotationRateDegrees(float rotationRateDegrees) {
-    this.rotationRateDegrees = rotationRateDegrees;
+  public void setListener(InteractionListener listener) {
+    this.listener = listener;
   }
 
-  public float getRotationRateDegrees() {
-    return rotationRateDegrees;
+  public InteractionListener getListener() {
+    return listener;
   }
 
   @Override
   public boolean canStartTransformation(TwistGesture gesture) {
-    return getTransformableNode().isSelected();
+    boolean selected = getTransformableNode().isSelected();
+    if (selected && null != listener) {
+      listener.onMovementStart(getTransformableNode());
+    }
+    return selected;
   }
 
   @Override
   public void onContinueTransformation(TwistGesture gesture) {
-    float rotationAmount = -gesture.getDeltaRotationDegrees() * rotationRateDegrees;
+    float rotationAmount = -gesture.getDeltaRotationDegrees() * settings.rotationRateDegrees;
     Quaternion rotationDelta = new Quaternion(Vector3.up(), rotationAmount);
     Quaternion localrotation = getTransformableNode().getLocalRotation();
     localrotation = Quaternion.multiply(localrotation, rotationDelta);
-    getTransformableNode().setLocalRotation(localrotation);
+    BaseTransformableNode baseTransformableNode = getTransformableNode();
+    baseTransformableNode.setLocalRotation(localrotation);
+
+    if (null != listener) {
+      listener.onMovementStart(baseTransformableNode);
+    }
   }
 
   @Override
-  public void onEndTransformation(TwistGesture gesture) {}
+  public void onEndTransformation(TwistGesture gesture) {
+    if (null != listener) {
+      listener.onMovementEnd(getTransformableNode());
+    }
+  }
 }

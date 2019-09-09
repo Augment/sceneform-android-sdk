@@ -43,7 +43,7 @@ import java.util.List;
  * DragGestureRecognizer}. If not selected, the {@link BaseTransformableNode} will become selected
  * when the {@link DragGesture} starts.
  */
-public class TranslationController extends BaseTransformationController<DragGesture> {
+public class TranslationController extends BaseTransformationController<DragGesture> implements InteractionController {
   private DetectedARPlanes.TypedPlanes floorPlanes;
 
   @Nullable private HitResult lastArHitResult = null;
@@ -56,6 +56,9 @@ public class TranslationController extends BaseTransformationController<DragGest
   private boolean canUpdate = false;
 
   private EnumSet<Plane.Type> allowedPlaneTypes = EnumSet.allOf(Plane.Type.class);
+
+  @Nullable
+  private InteractionListener listener = null;
 
   private static final float LERP_SPEED = 12.0f;
   private static final float POSITION_LENGTH_THRESHOLD = 0.01f;
@@ -78,6 +81,14 @@ public class TranslationController extends BaseTransformationController<DragGest
    */
   public EnumSet<Plane.Type> getAllowedPlaneTypes() {
     return allowedPlaneTypes;
+  }
+
+  public void setListener(InteractionListener listener) {
+    this.listener = listener;
+  }
+
+  public InteractionListener getListener() {
+    return listener;
   }
 
   @Override
@@ -117,6 +128,10 @@ public class TranslationController extends BaseTransformationController<DragGest
       initialForwardInLocal.set(parent.worldToLocalDirection(initialForwardInWorld));
     } else {
       initialForwardInLocal.set(initialForwardInWorld);
+    }
+
+    if (null!=listener) {
+      listener.onMovementStart(transformableNode);
     }
 
     return true;
@@ -168,6 +183,10 @@ public class TranslationController extends BaseTransformationController<DragGest
           lastArPlane = groundPlane;
         }
       }
+    }
+
+    if (null!=listener) {
+      listener.onMovementUpdate(getTransformableNode());
     }
 
     canUpdate = true;
@@ -226,6 +245,10 @@ public class TranslationController extends BaseTransformationController<DragGest
 
     desiredLocalPosition = null;
     desiredLocalRotation = null;
+
+    if (null!=listener) {
+      listener.onMovementEnd(getTransformableNode());
+    }
   }
 
   private AnchorNode getAnchorNodeOrDie() {
