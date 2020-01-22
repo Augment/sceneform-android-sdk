@@ -66,8 +66,7 @@ public abstract class BaseGesture<T extends BaseGesture<T>> {
     return wasCancelled;
   }
 
-  @Nullable
-  public Node getTargetNode() {
+  public @Nullable Node getTargetNode() {
     return targetNode;
   }
 
