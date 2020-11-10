@@ -144,7 +144,11 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
   }
 
   @Override
-  public void onEndTransformation(PinchGesture gesture) {}
+  public void onEndTransformation(PinchGesture gesture) {
+    if (null != listener) {
+      listener.onMovementEnd(getTransformableNode());
+    }
+  }
 
   private float getScaleDelta() {
     float scaleDelta = settings.maxScale - settings.minScale;
