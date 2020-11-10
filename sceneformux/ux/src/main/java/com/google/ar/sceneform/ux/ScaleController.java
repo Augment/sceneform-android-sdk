@@ -145,7 +145,7 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
 
   @Override
   public void onEndTransformation(PinchGesture gesture) {
-    if (null != listener) {
+    if (listener != null) {
       listener.onMovementEnd(getTransformableNode());
     }
   }
