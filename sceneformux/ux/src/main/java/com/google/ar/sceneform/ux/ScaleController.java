@@ -74,6 +74,11 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
     this.listener = listener;
   }
 
+  public void refreshScaleRatio() {
+    Vector3 scale = getTransformableNode().getLocalScale();
+    currentScaleRatio = (scale.x - settings.minScale) / getScaleDelta();
+  }
+
   public InteractionListener getListener() {
     return listener;
   }
@@ -81,8 +86,7 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
   @Override
   public void onActivated(Node node) {
     super.onActivated(node);
-    Vector3 scale = getTransformableNode().getLocalScale();
-    currentScaleRatio = (scale.x - settings.minScale) / getScaleDelta();
+    refreshScaleRatio();
   }
 
   @Override
@@ -140,7 +144,11 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
   }
 
   @Override
-  public void onEndTransformation(PinchGesture gesture) {}
+  public void onEndTransformation(PinchGesture gesture) {
+    if (listener != null) {
+      listener.onMovementEnd(getTransformableNode());
+    }
+  }
 
   private float getScaleDelta() {
     float scaleDelta = settings.maxScale - settings.minScale;
