@@ -53,6 +53,7 @@ public class TransformableNode extends BaseTransformableNode {
     this.transformableNodeListener = other.transformableNodeListener;
 
     translationController.setListener(other.translationController.getListener());
+    translationController.setSurroundingsPlaneListener(other.translationController.getSurroundingsPlaneListener());
     rotationController.setListener(other.rotationController.getListener());
     scaleController.setListener(other.scaleController.getListener());
   }
@@ -79,6 +80,7 @@ public class TransformableNode extends BaseTransformableNode {
   public void setTransformableNodeListener(TransformableNodeListener transformableNodeListener) {
     this.transformableNodeListener = transformableNodeListener;
     translationController.setListener(transformableNodeListener.translationListener);
+    translationController.setSurroundingsPlaneListener(transformableNodeListener.surroundingsPlaneListener);
     rotationController.setListener(transformableNodeListener.rotationListener);
     scaleController.setListener(transformableNodeListener.scaleListener);
   }
