@@ -83,6 +83,7 @@ public class TransformableNode extends BaseTransformableNode {
     scaleController.setListener(transformableNodeListener.scaleListener);
   }
 
+  @Nullable
   public TransformationListener getTransformableNodeListener() {
     return transformableNodeListener;
   }

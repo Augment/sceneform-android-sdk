@@ -2,15 +2,20 @@ package com.google.ar.sceneform.ux;
 
 import androidx.annotation.Nullable;
 
+import com.google.ar.core.Plane;
+
 import java.util.function.Consumer;
 
 public class TransformableNodeListener implements TransformationListener {
     public InteractionListener translationListener;
     public InteractionListener rotationListener;
     public InteractionListener scaleListener;
+    public SurroundingsPlaneListener surroundingsPlaneListener;
 
     @Nullable
     private TransformationListener transformationListener = null;
+    @Nullable
+    private SurroundingsListener surroundingsListener = null;
 
     public TransformableNodeListener() {
         TransformableNodeListener self = this;
@@ -65,14 +70,35 @@ public class TransformableNodeListener implements TransformationListener {
                 callOnTransformableNode(baseTransformableNode, self::onScalingEnd);
             }
         };
+
+        surroundingsPlaneListener = new SurroundingsPlaneListener() {
+            @Override
+            public void onPlaneChanged(BaseTransformableNode baseTransformableNode, @Nullable Plane plane) {
+                if (baseTransformableNode instanceof TransformableNode) {
+                    if ( null != surroundingsListener) {
+                        surroundingsListener.onUnderlyingPlaneChanged((TransformableNode)baseTransformableNode, plane);
+                    }
+                }
+            }
+        };
     }
 
     public void setTransformationListener(TransformationListener transformationListener) {
         this.transformationListener = transformationListener;
     }
 
+    @Nullable
     public TransformationListener getTransformationListener() {
         return transformationListener;
+    }
+
+    public void setSurroundingsListener(SurroundingsListener surroundingsListener) {
+        this.surroundingsListener = surroundingsListener;
+    }
+
+    @Nullable
+    public SurroundingsListener getSurroundingsListener() {
+        return surroundingsListener;
     }
 
     public void onTranslationStart(TransformableNode transformableNode) {
