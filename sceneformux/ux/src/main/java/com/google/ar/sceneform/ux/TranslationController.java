@@ -59,6 +59,8 @@ public class TranslationController extends BaseTransformationController<DragGest
 
   @Nullable
   private InteractionListener listener = null;
+  @Nullable
+  private SurroundingsPlaneListener surroundingsPlaneListener = null;
 
   private static final float LERP_SPEED = 12.0f;
   private static final float POSITION_LENGTH_THRESHOLD = 0.01f;
@@ -87,9 +89,15 @@ public class TranslationController extends BaseTransformationController<DragGest
     this.listener = listener;
   }
 
+  @Nullable
   public InteractionListener getListener() {
     return listener;
   }
+
+  public void setSurroundingsPlaneListener(SurroundingsPlaneListener listener) { this.surroundingsPlaneListener = listener; }
+
+  @Nullable
+  public SurroundingsPlaneListener getSurroundingsPlaneListener() { return surroundingsPlaneListener; }
 
   @Override
   public void onUpdated(Node node, FrameTime frameTime) {
@@ -154,6 +162,8 @@ public class TranslationController extends BaseTransformationController<DragGest
       return;
     }
 
+    @Nullable Plane lastArPlaneOld = lastArPlane;
+
     @Nullable Pose intersectionPose = null;
     Vector3 position = gesture.getPosition();
     List<HitResult> hitResultList = frame.hitTest(position.x, position.y);
@@ -185,7 +195,11 @@ public class TranslationController extends BaseTransformationController<DragGest
       }
     }
 
-    if (null!=listener) {
+    if (!lastArPlane.equals(lastArPlaneOld) && null != surroundingsPlaneListener) {
+      surroundingsPlaneListener.onPlaneChanged(getTransformableNode(), lastArPlane);
+    }
+
+    if (null != listener) {
       listener.onMovementUpdate(getTransformableNode());
     }
 
