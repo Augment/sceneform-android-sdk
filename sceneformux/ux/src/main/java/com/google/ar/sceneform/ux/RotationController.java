@@ -45,7 +45,7 @@ public class RotationController extends BaseTransformationController<TwistGestur
     super(transformableNode, gestureRecognizer);
   }
 
-  public void setListener(InteractionListener listener) {
+  public void setListener(@Nullable InteractionListener listener) {
     this.listener = listener;
   }
 

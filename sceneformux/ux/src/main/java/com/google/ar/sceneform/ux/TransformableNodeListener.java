@@ -108,7 +108,7 @@ public class TransformableNodeListener implements TransformationListener {
     }
 
     public void onTranslationUpdate(TransformableNode transformableNode) {
-        if (null!=transformationListener) {
+        if (null != transformationListener) {
             transformationListener.onTranslationUpdate(transformableNode);
         }
     }
@@ -125,30 +125,30 @@ public class TransformableNodeListener implements TransformationListener {
         }
     }
     public void onRotationUpdate(TransformableNode transformableNode) {
-        if (null!=transformationListener) {
+        if (null != transformationListener) {
             transformationListener.onRotationUpdate(transformableNode);
         }
     }
     public void onRotationEnd(TransformableNode transformableNode) {
-        if (null!=transformationListener) {
+        if (null != transformationListener) {
             transformationListener.onRotationEnd(transformableNode);
         }
     }
 
     public void onScalingStart(TransformableNode transformableNode) {
-        if (null!=transformationListener) {
+        if (null != transformationListener) {
             transformationListener.onScalingStart(transformableNode);
         }
     }
 
     public void onScalingUpdate(TransformableNode transformableNode) {
-        if (null!=transformationListener) {
+        if (null != transformationListener) {
             transformationListener.onScalingUpdate(transformableNode);
         }
     }
 
     public void onScalingEnd(TransformableNode transformableNode) {
-        if (null!=transformationListener) {
+        if (null != transformationListener) {
             transformationListener.onScalingEnd(transformableNode);
         }
     }

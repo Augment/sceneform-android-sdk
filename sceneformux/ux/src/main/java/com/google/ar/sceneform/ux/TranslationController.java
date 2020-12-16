@@ -85,7 +85,7 @@ public class TranslationController extends BaseTransformationController<DragGest
     return allowedPlaneTypes;
   }
 
-  public void setListener(InteractionListener listener) {
+  public void setListener(@Nullable InteractionListener listener) {
     this.listener = listener;
   }
 
@@ -138,7 +138,7 @@ public class TranslationController extends BaseTransformationController<DragGest
       initialForwardInLocal.set(initialForwardInWorld);
     }
 
-    if (null!=listener) {
+    if (null != listener) {
       listener.onMovementStart(transformableNode);
     }
 
@@ -260,7 +260,7 @@ public class TranslationController extends BaseTransformationController<DragGest
     desiredLocalPosition = null;
     desiredLocalRotation = null;
 
-    if (null!=listener) {
+    if (null != listener) {
       listener.onMovementEnd(getTransformableNode());
     }
   }

@@ -15,6 +15,7 @@
  */
 package com.google.ar.sceneform.ux;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -22,9 +23,9 @@ import androidx.annotation.Nullable;
  * TransformationSystem}.
  */
 public class TransformableNode extends BaseTransformableNode {
-  private final TranslationController translationController;
-  private final ScaleController scaleController;
-  private final RotationController rotationController;
+  private TranslationController translationController;
+  private ScaleController scaleController;
+  private RotationController rotationController;
 
   private final DetectedARPlanes detectedARPlanes;
 
@@ -47,7 +48,7 @@ public class TransformableNode extends BaseTransformableNode {
     addTransformationController(rotationController);
   }
 
-  public TransformableNode(TransformableNode other) {
+  public TransformableNode(@NonNull TransformableNode other) {
     this(other.getTransformationSystem(), other.detectedARPlanes);
 
     this.transformableNodeListener = other.transformableNodeListener;
@@ -59,30 +60,53 @@ public class TransformableNode extends BaseTransformableNode {
   }
 
   /** Returns the controller that translates this node using a drag gesture. */
-  public TranslationController getTranslationController() {
+  public @NonNull TranslationController getTranslationController() {
     return translationController;
   }
 
+  /** Set the controller that translates this node using a drag gesture. */
+  public void setTranslationController(@NonNull TranslationController translationController) {
+    this.translationController = translationController;
+  }
+
   /** Returns the controller that scales this node using a pinch gesture. */
-  public ScaleController getScaleController() {
+  public @NonNull ScaleController getScaleController() {
     return scaleController;
   }
 
+  /** Set the controller that scales this node using a pinch gesture. */
+  public void setScaleController(@NonNull ScaleController scaleController) {
+    this.scaleController = scaleController;
+  }
+
   /** Returns the controller that rotates this node using a twist gesture. */
-  public RotationController getRotationController() {
+  public @NonNull RotationController getRotationController() {
     return rotationController;
+  }
+
+  /** Set the controller that rotates this node using a twist gesture. */
+  public void setRotationController(@NonNull RotationController rotationController) {
+    this.rotationController = rotationController;
   }
 
   public DetectedARPlanes getDetectedARPlanes() {
     return detectedARPlanes;
   }
 
-  public void setTransformableNodeListener(TransformableNodeListener transformableNodeListener) {
-    this.transformableNodeListener = transformableNodeListener;
-    translationController.setListener(transformableNodeListener.translationListener);
-    translationController.setSurroundingsPlaneListener(transformableNodeListener.surroundingsPlaneListener);
-    rotationController.setListener(transformableNodeListener.rotationListener);
-    scaleController.setListener(transformableNodeListener.scaleListener);
+  public void setTransformableNodeListener(@Nullable TransformableNodeListener transformableNodeListener) {
+    if (transformableNodeListener != null) {
+      this.transformableNodeListener = transformableNodeListener;
+      translationController.setListener(transformableNodeListener.translationListener);
+      translationController.setSurroundingsPlaneListener(transformableNodeListener.surroundingsPlaneListener);
+      rotationController.setListener(transformableNodeListener.rotationListener);
+      scaleController.setListener(transformableNodeListener.scaleListener);
+    } else {
+      this.transformableNodeListener = null;
+      translationController.setListener(null);
+      translationController.setSurroundingsPlaneListener(null);
+      rotationController.setListener(null);
+      scaleController.setListener(null);
+    }
   }
 
   @Nullable
