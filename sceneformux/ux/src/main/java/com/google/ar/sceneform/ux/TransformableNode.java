@@ -38,7 +38,7 @@ public class TransformableNode extends BaseTransformableNode {
     this.detectedARPlanes = detectedARPlanes;
 
     translationController =
-        new TranslationController(this, transformationSystem.getDragRecognizer(), detectedARPlanes);
+        new TranslationController2(this, transformationSystem.getDragRecognizer(), detectedARPlanes);
     addTransformationController(translationController);
 
     scaleController = new ScaleController(this, transformationSystem.getPinchRecognizer());
