@@ -64,7 +64,7 @@ public class TranslationController2 extends TransformationController<DragGesture
     @Nullable
     private BaseSurroundingsListener surroundingsPlaneListener = null;
 
-    private static final float ONE_DEGREE_IN_RADIANS = 12.0f;
+    private static final float ONE_DEGREE_IN_RADIANS = 0.0175f;
 
     public TranslationController2(BaseTransformableNode transformableNode, BaseGestureRecognizer<DragGesture> gestureRecognizer, DetectedARPlanes detectedARPlanes) {
         super(transformableNode, gestureRecognizer);
