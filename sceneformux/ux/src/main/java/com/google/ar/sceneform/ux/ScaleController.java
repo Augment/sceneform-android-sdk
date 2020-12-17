@@ -15,6 +15,8 @@
  */
 package com.google.ar.sceneform.ux;
 
+import android.gesture.Gesture;
+
 import androidx.annotation.Nullable;
 
 import com.google.ar.sceneform.FrameTime;
@@ -30,7 +32,7 @@ import static java.lang.StrictMath.max;
  * PinchGestureRecognizer}. Applies a tunable elastic bounce-back when scaling the {@link
  * BaseTransformableNode} beyond the min/max scale.
  */
-public class ScaleController extends BaseTransformationController<PinchGesture> implements InteractionController {
+public class ScaleController extends TransformationController<PinchGesture> {
 
   public class Settings {
 
@@ -62,25 +64,52 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
 
   @Nullable
   private InteractionListener listener = null;
+  @Nullable
+  private BaseSurroundingsListener surroundingsListener = null;
 
   private boolean canUpdate = false;
 
   public ScaleController(
-      BaseTransformableNode transformableNode, PinchGestureRecognizer gestureRecognizer) {
+      BaseTransformableNode transformableNode, BaseGestureRecognizer<PinchGesture> gestureRecognizer) {
     super(transformableNode, gestureRecognizer);
   }
 
+  // ---------------------------------------------------------------------------------------
+  // Implementation of interface TransformationController
+  // ---------------------------------------------------------------------------------------
+
+  @Override
+  public TransformationController<PinchGesture> copy() {
+    return new ScaleController(getTransformableNode(), getGestureRecognizer());
+  }
+
+  // ---------------------------------------------------------------------------------------
+  // Implementation of interface InteractionController
+  // ---------------------------------------------------------------------------------------
+
+  @Override
   public void setListener(@Nullable InteractionListener listener) {
     this.listener = listener;
   }
 
+  @Override @Nullable
+  public InteractionListener getListener() {
+    return listener;
+  }
+
+  @Override
+  public void setSurroundingsListener(@Nullable BaseSurroundingsListener listener) { this.surroundingsListener = listener; }
+
+  @Override @Nullable
+  public BaseSurroundingsListener getSurroundingsListener() { return surroundingsListener; }
+
+  // ---------------------------------------------------------------------------------------
+  // Other
+  // ---------------------------------------------------------------------------------------
+
   public void refreshScaleRatio() {
     Vector3 scale = getTransformableNode().getLocalScale();
     currentScaleRatio = (scale.x - settings.minScale) / getScaleDelta();
-  }
-
-  public InteractionListener getListener() {
-    return listener;
   }
 
   @Override
