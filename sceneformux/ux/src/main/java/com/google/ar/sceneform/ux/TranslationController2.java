@@ -122,15 +122,8 @@ public class TranslationController2 extends TransformationController<DragGesture
     @Override
     public void onUpdated(Node node, FrameTime frameTime) {
         if (canUpdate) {
-            BaseTransformableNode transformableNode = getTransformableNode();
-            if (desiredWorldPosition != null) {
-                transformableNode.setWorldPosition(desiredWorldPosition);
-                desiredWorldPosition = null;
-            }
-            if (desiredWorldRotation != null) {
-                transformableNode.setWorldRotation(desiredWorldRotation);
-                desiredWorldRotation = null;
-            }
+            updatePosition();
+            updateRotation();
         }
     }
 
@@ -280,10 +273,31 @@ public class TranslationController2 extends TransformationController<DragGesture
             // set position and rotation
             transformableNode.setWorldPosition(worldPosition);
             transformableNode.setWorldRotation(worldRotation);
+
+            // update a last time as onUpdated may have not be called before
+            updatePosition();
+            updateRotation();
         }
+
+        desiredWorldPosition = null;
+        desiredWorldRotation = null;
 
         if (null != listener) {
             listener.onMovementEnd(getTransformableNode());
+        }
+    }
+
+    private void updatePosition() {
+        if (desiredWorldPosition != null) {
+            getTransformableNode().setWorldPosition(desiredWorldPosition);
+            desiredWorldPosition = null;
+        }
+    }
+
+    private void updateRotation() {
+        if (desiredWorldRotation != null) {
+            getTransformableNode().setWorldRotation(desiredWorldRotation);
+            desiredWorldRotation = null;
         }
     }
 
