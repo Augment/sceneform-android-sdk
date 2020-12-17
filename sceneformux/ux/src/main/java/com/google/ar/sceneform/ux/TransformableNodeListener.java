@@ -1,16 +1,18 @@
 package com.google.ar.sceneform.ux;
 
+import android.util.ArrayMap;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.ar.core.Plane;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class TransformableNodeListener implements TransformationListener {
-    public InteractionListener translationListener;
-    public InteractionListener rotationListener;
-    public InteractionListener scaleListener;
-    public SurroundingsPlaneListener surroundingsPlaneListener;
+    private final BaseSurroundingsListener baseSurroundingsListener;
+    private final Map<InteractionListenerType, InteractionListener> interactionListeners = new ArrayMap<>(3);
 
     @Nullable
     private TransformationListener transformationListener = null;
@@ -20,7 +22,7 @@ public class TransformableNodeListener implements TransformationListener {
     public TransformableNodeListener() {
         TransformableNodeListener self = this;
 
-        translationListener = new InteractionListener() {
+        interactionListeners.put(InteractionListenerType.TRANSLATION, new InteractionListener() {
             @Override
             public void onMovementStart(BaseTransformableNode baseTransformableNode) {
                 callOnTransformableNode(baseTransformableNode, self::onTranslationStart);
@@ -35,9 +37,9 @@ public class TransformableNodeListener implements TransformationListener {
             public void onMovementEnd(BaseTransformableNode baseTransformableNode) {
                 callOnTransformableNode(baseTransformableNode, self::onTranslationEnd);
             }
-        };
+        });
 
-        rotationListener = new InteractionListener() {
+        interactionListeners.put(InteractionListenerType.ROTATION, new InteractionListener() {
             @Override
             public void onMovementStart(BaseTransformableNode baseTransformableNode) {
                 callOnTransformableNode(baseTransformableNode, self::onRotationStart);
@@ -52,9 +54,9 @@ public class TransformableNodeListener implements TransformationListener {
             public void onMovementEnd(BaseTransformableNode baseTransformableNode) {
                 callOnTransformableNode(baseTransformableNode, self::onRotationEnd);
             }
-        };
+        });
 
-        scaleListener = new InteractionListener() {
+        interactionListeners.put(InteractionListenerType.SCALE, new InteractionListener() {
             @Override
             public void onMovementStart(BaseTransformableNode baseTransformableNode) {
                 callOnTransformableNode(baseTransformableNode, self::onScalingStart);
@@ -69,9 +71,9 @@ public class TransformableNodeListener implements TransformationListener {
             public void onMovementEnd(BaseTransformableNode baseTransformableNode) {
                 callOnTransformableNode(baseTransformableNode, self::onScalingEnd);
             }
-        };
+        });
 
-        surroundingsPlaneListener = new SurroundingsPlaneListener() {
+        baseSurroundingsListener = new BaseSurroundingsListener() {
             @Override
             public void onPlaneChanged(BaseTransformableNode baseTransformableNode, @Nullable Plane plane) {
                 if (baseTransformableNode instanceof TransformableNode) {
@@ -83,7 +85,7 @@ public class TransformableNodeListener implements TransformationListener {
         };
     }
 
-    public void setTransformationListener(TransformationListener transformationListener) {
+    public void setTransformationListener(@Nullable TransformationListener transformationListener) {
         this.transformationListener = transformationListener;
     }
 
@@ -92,7 +94,7 @@ public class TransformableNodeListener implements TransformationListener {
         return transformationListener;
     }
 
-    public void setSurroundingsListener(SurroundingsListener surroundingsListener) {
+    public void setSurroundingsListener(@Nullable SurroundingsListener surroundingsListener) {
         this.surroundingsListener = surroundingsListener;
     }
 
@@ -100,6 +102,20 @@ public class TransformableNodeListener implements TransformationListener {
     public SurroundingsListener getSurroundingsListener() {
         return surroundingsListener;
     }
+
+    public void attachListeners(@NonNull InteractionController controller, @NonNull InteractionListenerType type) {
+        controller.setListener(interactionListeners.get(type));
+        controller.setSurroundingsListener(baseSurroundingsListener);
+    }
+
+    public void detachListeners(@NonNull InteractionController controller) {
+        controller.setListener(null);
+        controller.setSurroundingsListener(null);
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Implementation of interface TransformationListener
+    // ---------------------------------------------------------------------------------------
 
     public void onTranslationStart(TransformableNode transformableNode) {
         if (null != transformationListener) {
@@ -124,11 +140,13 @@ public class TransformableNodeListener implements TransformationListener {
             transformationListener.onRotationStart(transformableNode);
         }
     }
+
     public void onRotationUpdate(TransformableNode transformableNode) {
         if (null != transformationListener) {
             transformationListener.onRotationUpdate(transformableNode);
         }
     }
+
     public void onRotationEnd(TransformableNode transformableNode) {
         if (null != transformationListener) {
             transformationListener.onRotationEnd(transformableNode);
