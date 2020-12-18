@@ -15,6 +15,7 @@
  */
 package com.google.ar.sceneform.ux;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.ar.core.Anchor;
@@ -77,8 +78,8 @@ public class TranslationController extends TransformationController<DragGesture>
   // ---------------------------------------------------------------------------------------
 
   @Override
-  public TransformationController<DragGesture> copy() {
-    return new TranslationController(getTransformableNode(), getGestureRecognizer(), detectedPlanes);
+  public TransformationController<DragGesture> copyFor(@NonNull BaseTransformableNode transformableNode) {
+    return new TranslationController(transformableNode, getGestureRecognizer(), detectedPlanes);
   }
 
   // ---------------------------------------------------------------------------------------

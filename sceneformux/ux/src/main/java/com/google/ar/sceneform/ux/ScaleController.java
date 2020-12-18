@@ -17,6 +17,7 @@ package com.google.ar.sceneform.ux;
 
 import android.gesture.Gesture;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.ar.sceneform.FrameTime;
@@ -79,8 +80,8 @@ public class ScaleController extends TransformationController<PinchGesture> {
   // ---------------------------------------------------------------------------------------
 
   @Override
-  public TransformationController<PinchGesture> copy() {
-    return new ScaleController(getTransformableNode(), getGestureRecognizer());
+  public TransformationController<PinchGesture> copyFor(@NonNull BaseTransformableNode transformableNode) {
+    return new ScaleController(transformableNode, getGestureRecognizer());
   }
 
   // ---------------------------------------------------------------------------------------

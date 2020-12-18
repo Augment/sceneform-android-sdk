@@ -76,8 +76,8 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
     // ---------------------------------------------------------------------------------------
 
     @Override
-    public TransformationController<DragGesture> copy() {
-        return new TranslationControllerWithPlaneChange(getTransformableNode(), getGestureRecognizer(), detectedPlanes);
+    public TransformationController<DragGesture> copyFor(@NonNull BaseTransformableNode transformableNode) {
+        return new TranslationControllerWithPlaneChange(transformableNode, getGestureRecognizer(), detectedPlanes);
     }
 
     // ---------------------------------------------------------------------------------------

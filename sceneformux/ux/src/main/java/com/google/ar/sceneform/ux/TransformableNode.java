@@ -52,9 +52,9 @@ public class TransformableNode extends BaseTransformableNode {
     // don't call default constructor to keep controller types injected by setters
     super(other.getTransformationSystem());
     this.detectedARPlanes = other.detectedARPlanes;
-    this.translationController = other.translationController.copy();
-    this.rotationController = other.rotationController.copy();
-    this.scaleController = other.scaleController.copy();
+    this.translationController = other.translationController.copyFor(this);
+    this.rotationController = other.rotationController.copyFor(this);
+    this.scaleController = other.scaleController.copyFor(this);
     addTransformationController(translationController);
     addTransformationController(rotationController);
     addTransformationController(scaleController);

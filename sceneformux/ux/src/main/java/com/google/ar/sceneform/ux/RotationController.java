@@ -17,6 +17,7 @@ package com.google.ar.sceneform.ux;
 
 import android.gesture.Gesture;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.ar.sceneform.math.Quaternion;
@@ -54,8 +55,8 @@ public class RotationController extends TransformationController<TwistGesture> {
   // ---------------------------------------------------------------------------------------
 
   @Override
-  public TransformationController<TwistGesture> copy() {
-    return new RotationController(getTransformableNode(), getGestureRecognizer());
+  public TransformationController<TwistGesture> copyFor(@NonNull BaseTransformableNode transformableNode) {
+    return new RotationController(transformableNode, getGestureRecognizer());
   }
 
   // ---------------------------------------------------------------------------------------
