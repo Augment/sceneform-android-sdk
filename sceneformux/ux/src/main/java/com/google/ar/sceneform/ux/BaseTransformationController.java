@@ -68,6 +68,8 @@ public abstract class BaseTransformationController<T extends BaseGesture<T>>
     return transformableNode;
   }
 
+  protected BaseGestureRecognizer<T> getGestureRecognizer() { return gestureRecognizer; }
+
   // ---------------------------------------------------------------------------------------
   // Implementation of interface Node.LifecycleListener
   // ---------------------------------------------------------------------------------------

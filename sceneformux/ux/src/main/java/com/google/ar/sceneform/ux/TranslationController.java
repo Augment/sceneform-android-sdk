@@ -15,6 +15,7 @@
  */
 package com.google.ar.sceneform.ux;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.ar.core.Anchor;
@@ -43,13 +44,13 @@ import java.util.List;
  * DragGestureRecognizer}. If not selected, the {@link BaseTransformableNode} will become selected
  * when the {@link DragGesture} starts.
  */
-public class TranslationController extends BaseTransformationController<DragGesture> implements InteractionController {
-  private DetectedARPlanes.TypedPlanes floorPlanes;
+public class TranslationController extends TransformationController<DragGesture> {
 
   @Nullable private HitResult lastArHitResult = null;
   @Nullable private Plane lastArPlane = null;
   @Nullable private Vector3 desiredLocalPosition = null;
   @Nullable private Quaternion desiredLocalRotation = null;
+  private final DetectedARPlanes detectedPlanes;
 
   private final Vector3 initialForwardInLocal = new Vector3();
 
@@ -60,17 +61,50 @@ public class TranslationController extends BaseTransformationController<DragGest
   @Nullable
   private InteractionListener listener = null;
   @Nullable
-  private SurroundingsPlaneListener surroundingsPlaneListener = null;
+  private BaseSurroundingsListener surroundingsListener = null;
 
   private static final float LERP_SPEED = 12.0f;
   private static final float POSITION_LENGTH_THRESHOLD = 0.01f;
   private static final float ROTATION_DOT_THRESHOLD = 0.99f;
 
   public TranslationController(
-      BaseTransformableNode transformableNode, DragGestureRecognizer gestureRecognizer, DetectedARPlanes detectedARPlanes) {
+      BaseTransformableNode transformableNode, BaseGestureRecognizer<DragGesture> gestureRecognizer, DetectedARPlanes detectedARPlanes) {
     super(transformableNode, gestureRecognizer);
-    this.floorPlanes = detectedARPlanes.floorPlanes;
+    this.detectedPlanes = detectedARPlanes;
   }
+
+  // ---------------------------------------------------------------------------------------
+  // Implementation of interface TransformationController
+  // ---------------------------------------------------------------------------------------
+
+  @Override
+  public TransformationController<DragGesture> copyFor(@NonNull BaseTransformableNode transformableNode) {
+    return new TranslationController(transformableNode, getGestureRecognizer(), detectedPlanes);
+  }
+
+  // ---------------------------------------------------------------------------------------
+  // Implementation of interface InteractionController
+  // ---------------------------------------------------------------------------------------
+
+  @Override
+  public void setListener(@Nullable InteractionListener listener) {
+    this.listener = listener;
+  }
+
+  @Override @Nullable
+  public InteractionListener getListener() {
+    return listener;
+  }
+
+  @Override
+  public void setSurroundingsListener(@Nullable BaseSurroundingsListener listener) { this.surroundingsListener = listener; }
+
+  @Override @Nullable
+  public BaseSurroundingsListener getSurroundingsListener() { return surroundingsListener; }
+
+  // ---------------------------------------------------------------------------------------
+  // Other
+  // ---------------------------------------------------------------------------------------
 
   /** Sets which types of ArCore Planes this TranslationController is allowed to translate on. */
   public void setAllowedPlaneTypes(EnumSet<Plane.Type> allowedPlaneTypes) {
@@ -85,19 +119,6 @@ public class TranslationController extends BaseTransformationController<DragGest
     return allowedPlaneTypes;
   }
 
-  public void setListener(InteractionListener listener) {
-    this.listener = listener;
-  }
-
-  @Nullable
-  public InteractionListener getListener() {
-    return listener;
-  }
-
-  public void setSurroundingsPlaneListener(SurroundingsPlaneListener listener) { this.surroundingsPlaneListener = listener; }
-
-  @Nullable
-  public SurroundingsPlaneListener getSurroundingsPlaneListener() { return surroundingsPlaneListener; }
 
   @Override
   public void onUpdated(Node node, FrameTime frameTime) {
@@ -138,7 +159,7 @@ public class TranslationController extends BaseTransformationController<DragGest
       initialForwardInLocal.set(initialForwardInWorld);
     }
 
-    if (null!=listener) {
+    if (null != listener) {
       listener.onMovementStart(transformableNode);
     }
 
@@ -147,6 +168,7 @@ public class TranslationController extends BaseTransformationController<DragGest
 
   @Override
   public void onContinueTransformation(DragGesture gesture) {
+    BaseTransformableNode transformableNode = getTransformableNode();
     Scene scene = getTransformableNode().getScene();
     if (scene == null) {
       return;
@@ -173,7 +195,7 @@ public class TranslationController extends BaseTransformationController<DragGest
       Pose pose = hit.getHitPose();
       if (trackable instanceof Plane) {
         Plane plane = (Plane) trackable;
-        if (allowedPlaneTypes.contains(plane.getType()) && (floorPlanes.isFirstPlane(plane) || plane.isPoseInPolygon(pose))) {
+        if (allowedPlaneTypes.contains(plane.getType()) && (detectedPlanes.floorPlanes.isFirstPlane(plane) || plane.isPoseInPolygon(pose))) {
           intersectionPose = pose;
           lastArHitResult = hit;
           lastArPlane = plane;
@@ -185,7 +207,7 @@ public class TranslationController extends BaseTransformationController<DragGest
     if (intersectionPose!=null) {
       updateDesiredPositionAndRotation(intersectionPose);
     } else {
-      Plane groundPlane = floorPlanes.getFirstPlane();
+      Plane groundPlane = detectedPlanes.floorPlanes.getFirstPlane();
       if (groundPlane!=null) {
         intersectionPose = PlaneIntersection.intersect(groundPlane, scene.getCamera().screenPointToRay(position.x, position.y), true);
         if (intersectionPose!=null) {
@@ -195,12 +217,12 @@ public class TranslationController extends BaseTransformationController<DragGest
       }
     }
 
-    if (!lastArPlane.equals(lastArPlaneOld) && null != surroundingsPlaneListener) {
-      surroundingsPlaneListener.onPlaneChanged(getTransformableNode(), lastArPlane);
+    if (!lastArPlane.equals(lastArPlaneOld) && null != surroundingsListener) {
+        surroundingsListener.onPlaneChanged(transformableNode, lastArPlane);
     }
 
     if (null != listener) {
-      listener.onMovementUpdate(getTransformableNode());
+      listener.onMovementUpdate(transformableNode);
     }
 
     canUpdate = true;
@@ -260,7 +282,7 @@ public class TranslationController extends BaseTransformationController<DragGest
     desiredLocalPosition = null;
     desiredLocalRotation = null;
 
-    if (null!=listener) {
+    if (null != listener) {
       listener.onMovementEnd(getTransformableNode());
     }
   }

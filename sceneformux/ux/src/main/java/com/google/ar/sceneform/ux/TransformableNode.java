@@ -15,6 +15,7 @@
  */
 package com.google.ar.sceneform.ux;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -22,9 +23,9 @@ import androidx.annotation.Nullable;
  * TransformationSystem}.
  */
 public class TransformableNode extends BaseTransformableNode {
-  private final TranslationController translationController;
-  private final ScaleController scaleController;
-  private final RotationController rotationController;
+  private TransformationController<DragGesture> translationController;
+  private TransformationController<PinchGesture> scaleController;
+  private TransformationController<TwistGesture> rotationController;
 
   private final DetectedARPlanes detectedARPlanes;
 
@@ -37,7 +38,7 @@ public class TransformableNode extends BaseTransformableNode {
     this.detectedARPlanes = detectedARPlanes;
 
     translationController =
-        new TranslationController(this, transformationSystem.getDragRecognizer(), detectedARPlanes);
+        new TranslationControllerWithPlaneChange(this, transformationSystem.getDragRecognizer(), detectedARPlanes);
     addTransformationController(translationController);
 
     scaleController = new ScaleController(this, transformationSystem.getPinchRecognizer());
@@ -47,42 +48,65 @@ public class TransformableNode extends BaseTransformableNode {
     addTransformationController(rotationController);
   }
 
-  public TransformableNode(TransformableNode other) {
-    this(other.getTransformationSystem(), other.detectedARPlanes);
-
-    this.transformableNodeListener = other.transformableNodeListener;
-
-    translationController.setListener(other.translationController.getListener());
-    translationController.setSurroundingsPlaneListener(other.translationController.getSurroundingsPlaneListener());
-    rotationController.setListener(other.rotationController.getListener());
-    scaleController.setListener(other.scaleController.getListener());
+  public TransformableNode(@NonNull TransformableNode other) {
+    // don't call default constructor to keep controller types injected by setters
+    super(other.getTransformationSystem());
+    this.detectedARPlanes = other.detectedARPlanes;
+    this.translationController = other.translationController.copyFor(this);
+    this.rotationController = other.rotationController.copyFor(this);
+    this.scaleController = other.scaleController.copyFor(this);
+    addTransformationController(translationController);
+    addTransformationController(rotationController);
+    addTransformationController(scaleController);
+    setTransformableNodeListener(other.transformableNodeListener);
   }
 
   /** Returns the controller that translates this node using a drag gesture. */
-  public TranslationController getTranslationController() {
+  public @NonNull TransformationController<DragGesture> getTranslationController() {
     return translationController;
   }
 
+  /** Set the controller that translates this node using a drag gesture. */
+  public void setTranslationController(@NonNull TransformationController<DragGesture> translationController) {
+    this.translationController = translationController;
+  }
+
   /** Returns the controller that scales this node using a pinch gesture. */
-  public ScaleController getScaleController() {
+  public @NonNull TransformationController<PinchGesture> getScaleController() {
     return scaleController;
   }
 
+  /** Set the controller that scales this node using a pinch gesture. */
+  public void setScaleController(@NonNull TransformationController<PinchGesture> scaleController) {
+    this.scaleController = scaleController;
+  }
+
   /** Returns the controller that rotates this node using a twist gesture. */
-  public RotationController getRotationController() {
+  public @NonNull TransformationController<TwistGesture> getRotationController() {
     return rotationController;
+  }
+
+  /** Set the controller that rotates this node using a twist gesture. */
+  public void setRotationController(@NonNull TransformationController<TwistGesture> rotationController) {
+    this.rotationController = rotationController;
   }
 
   public DetectedARPlanes getDetectedARPlanes() {
     return detectedARPlanes;
   }
 
-  public void setTransformableNodeListener(TransformableNodeListener transformableNodeListener) {
-    this.transformableNodeListener = transformableNodeListener;
-    translationController.setListener(transformableNodeListener.translationListener);
-    translationController.setSurroundingsPlaneListener(transformableNodeListener.surroundingsPlaneListener);
-    rotationController.setListener(transformableNodeListener.rotationListener);
-    scaleController.setListener(transformableNodeListener.scaleListener);
+  public void setTransformableNodeListener(@Nullable TransformableNodeListener transformableNodeListener) {
+    if (transformableNodeListener != null) {
+      this.transformableNodeListener = transformableNodeListener;
+      transformableNodeListener.attachListeners(translationController, InteractionListenerType.TRANSLATION);
+      transformableNodeListener.attachListeners(rotationController, InteractionListenerType.ROTATION);
+      transformableNodeListener.attachListeners(scaleController, InteractionListenerType.SCALE);
+    } else {
+      this.transformableNodeListener = null;
+      transformableNodeListener.detachListeners(translationController);
+      transformableNodeListener.detachListeners(rotationController);
+      transformableNodeListener.detachListeners(scaleController);
+    }
   }
 
   @Nullable
