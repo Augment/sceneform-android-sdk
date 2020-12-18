@@ -43,7 +43,7 @@ import java.util.List;
  * DragGestureRecognizer}. If not selected, the {@link BaseTransformableNode} will become selected
  * when the {@link DragGesture} starts.
  */
-public class TranslationController2 extends TransformationController<DragGesture> {
+public class TranslationControllerWithPlaneChange extends TransformationController<DragGesture> {
 
     @Nullable
     private HitResult lastArHitResult = null;
@@ -66,7 +66,7 @@ public class TranslationController2 extends TransformationController<DragGesture
 
     private static final float ONE_DEGREE_IN_RADIANS = 0.0175f;
 
-    public TranslationController2(BaseTransformableNode transformableNode, BaseGestureRecognizer<DragGesture> gestureRecognizer, DetectedARPlanes detectedARPlanes) {
+    public TranslationControllerWithPlaneChange(BaseTransformableNode transformableNode, BaseGestureRecognizer<DragGesture> gestureRecognizer, DetectedARPlanes detectedARPlanes) {
         super(transformableNode, gestureRecognizer);
         this.detectedPlanes = detectedARPlanes;
     }
@@ -77,7 +77,7 @@ public class TranslationController2 extends TransformationController<DragGesture
 
     @Override
     public TransformationController<DragGesture> copy() {
-        return new TranslationController2(getTransformableNode(), getGestureRecognizer(), detectedPlanes);
+        return new TranslationControllerWithPlaneChange(getTransformableNode(), getGestureRecognizer(), detectedPlanes);
     }
 
     // ---------------------------------------------------------------------------------------
