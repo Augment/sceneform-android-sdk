@@ -261,7 +261,7 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
             }
         }
 
-        if (predictivePose != null && posePredictionListener != null) {
+        if (posePredictionListener != null) {
             posePredictionListener.onPosePreviewListener(predictivePose, isPredictivePoseApplicable);
         }
 
