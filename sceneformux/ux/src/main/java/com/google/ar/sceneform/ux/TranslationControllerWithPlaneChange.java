@@ -196,6 +196,7 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
         @Nullable Plane lastArPlaneOld = lastArPlane;
         @Nullable Pose intersectionPose = null;
         @Nullable Pose predictivePose = null;
+        @Nullable Trackable predictiveTrackable = null;
         boolean isPredictivePoseApplicable = false;
 
         Vector3 position = gesture.getPosition();
@@ -209,6 +210,7 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
                 boolean isPoseValid = detectedPlanes.floorPlanes.isFirstPlane(plane) || plane.isPoseInPolygon(pose);
                 if (isPoseValid) {
                     predictivePose = pose;
+                    predictiveTrackable = plane;
                 }
 
                 if (isPoseValid && allowedPlaneTypes.contains(plane.getType())) {
@@ -227,6 +229,7 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
                 intersectionPose = PlaneIntersection.intersect(groundPlane, scene.getCamera().screenPointToRay(position.x, position.y), true);
                 if (intersectionPose != null) {
                     predictivePose = intersectionPose;
+                    predictiveTrackable = groundPlane;
                     if (allowedPlaneTypes.contains(Plane.Type.HORIZONTAL_UPWARD_FACING)) {
                         isPredictivePoseApplicable = true;
                         lastArPlane = groundPlane;
@@ -262,7 +265,7 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
         }
 
         if (posePredictionListener != null) {
-            posePredictionListener.onPosePreviewListener(predictivePose, isPredictivePoseApplicable);
+            posePredictionListener.onPosePreviewListener(predictivePose, predictiveTrackable, isPredictivePoseApplicable);
         }
 
         if (listener != null) {
