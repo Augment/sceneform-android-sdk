@@ -18,11 +18,11 @@ group='com.augment'
 version='1.14.0-beta1'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         // Sceneform requires minSdkVersion >= 24.
         minSdkVersion 24
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName version
     }
