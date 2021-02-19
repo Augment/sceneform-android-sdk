@@ -102,10 +102,13 @@ public class TransformableNode extends BaseTransformableNode {
       transformableNodeListener.attachListeners(rotationController, InteractionListenerType.ROTATION);
       transformableNodeListener.attachListeners(scaleController, InteractionListenerType.SCALE);
     } else {
-      this.transformableNodeListener = null;
-      transformableNodeListener.detachListeners(translationController);
-      transformableNodeListener.detachListeners(rotationController);
-      transformableNodeListener.detachListeners(scaleController);
+      TransformableNodeListener attachedListener = this.transformableNodeListener;
+      if (attachedListener != null) {
+        attachedListener.detachListeners(translationController);
+        attachedListener.detachListeners(rotationController);
+        attachedListener.detachListeners(scaleController);
+        this.transformableNodeListener = null;
+      }
     }
   }
 
