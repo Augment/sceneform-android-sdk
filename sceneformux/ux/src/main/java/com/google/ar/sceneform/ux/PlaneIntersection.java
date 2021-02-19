@@ -9,7 +9,7 @@ import com.google.ar.sceneform.math.Vector3;
 
 public class PlaneIntersection {
     @Nullable
-    public static Pose intersect(Plane plane, Ray ray, boolean isInfinite) {
+    public static Pose intersect(Plane plane, Ray ray, boolean isInfinite, Float infinitePlaneIntersectionMaximumDistance) {
         Vector3 normalizedDirection = ray.getDirection().normalized();
         Pose planeCenterPose = plane.getCenterPose();
         float[] planeYAxis = planeCenterPose.getYAxis();
@@ -36,7 +36,7 @@ public class PlaneIntersection {
         Vector3 position = Vector3.add(rayOrigin, normalizedDirection.scaled(distance));
         Pose pose = new Pose(new float[]{position.x, position.y, position.z}, planeCenterPose.getRotationQuaternion());
 
-        if (isInfinite || plane.isPoseInPolygon(pose)) {
+        if (plane.isPoseInPolygon(pose) || (isInfinite && distance <= infinitePlaneIntersectionMaximumDistance)) {
             return pose;
         } else {
             return null;

@@ -43,7 +43,7 @@ import java.util.List;
  * DragGestureRecognizer}. If not selected, the {@link BaseTransformableNode} will become selected
  * when the {@link DragGesture} starts.
  */
-public class TranslationControllerWithPlaneChange extends TransformationController<DragGesture> {
+public class TranslationControllerWithPlaneChange extends TransformationController<DragGesture> implements InfinitePlaneSettings {
 
     @Nullable
     private HitResult lastArHitResult = null;
@@ -58,6 +58,7 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
     private boolean canUpdate = false;
 
     private EnumSet<Plane.Type> allowedPlaneTypes = EnumSet.allOf(Plane.Type.class);
+    private Float infinitePlaneIntersectionMaximumDistance = Float.MAX_VALUE;
 
     @Nullable
     private InteractionListener listener = null;
@@ -117,6 +118,15 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
         return posePredictionListener;
     }
 
+
+    // ---------------------------------------------------------------------------------------
+    // Implementation of interface InfinitePlaneSettings
+    // ---------------------------------------------------------------------------------------
+
+    @Override
+    public void setInfinitePlaneIntersectionMaximumDistance(Float distance) {
+        infinitePlaneIntersectionMaximumDistance = distance;
+    }
 
     // ---------------------------------------------------------------------------------------
     // Other
@@ -226,7 +236,7 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
         if (intersectionPose == null) {
             Plane groundPlane = detectedPlanes.floorPlanes.getFirstPlane();
             if (groundPlane != null) {
-                intersectionPose = PlaneIntersection.intersect(groundPlane, scene.getCamera().screenPointToRay(position.x, position.y), true);
+                intersectionPose = PlaneIntersection.intersect(groundPlane, scene.getCamera().screenPointToRay(position.x, position.y), true, infinitePlaneIntersectionMaximumDistance);
                 if (intersectionPose != null) {
                     predictivePose = intersectionPose;
                     predictiveTrackable = groundPlane;
