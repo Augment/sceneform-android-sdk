@@ -233,6 +233,8 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
                     if (allowedPlaneTypes.contains(Plane.Type.HORIZONTAL_UPWARD_FACING)) {
                         isPredictivePoseApplicable = true;
                         lastArPlane = groundPlane;
+                    } else {
+                        intersectionPose = null;
                     }
                 }
             }
@@ -255,12 +257,10 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
 
             float[] translation = intersectionPose.getTranslation();
             desiredWorldPosition = new Vector3(translation[0], translation[1], translation[2]);
-            predictivePose = Pose.makeTranslation(translation);
 
             // rotation applied to keep alignment with the surface
             if (transitionRotation != null) {
                 desiredWorldRotation = Quaternion.multiply(transitionRotation, transformableNode.getWorldRotation());
-                predictivePose = predictivePose.compose(Pose.makeRotation(desiredWorldRotation.x, desiredWorldRotation.y, desiredWorldRotation.z, desiredWorldRotation.w));
             }
         }
 
