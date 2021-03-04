@@ -209,7 +209,7 @@ public class TranslationController extends TransformationController<DragGesture>
     } else {
       Plane groundPlane = detectedPlanes.floorPlanes.getFirstPlane();
       if (groundPlane!=null) {
-        intersectionPose = PlaneIntersection.intersect(groundPlane, scene.getCamera().screenPointToRay(position.x, position.y), true);
+        intersectionPose = PlaneIntersection.intersect(groundPlane, scene.getCamera().screenPointToRay(position.x, position.y), true, Float.MAX_VALUE);
         if (intersectionPose!=null) {
           updateDesiredPositionAndRotation(intersectionPose);
           lastArPlane = groundPlane;
