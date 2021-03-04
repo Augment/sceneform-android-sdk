@@ -63,6 +63,8 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
     private InteractionListener listener = null;
     @Nullable
     private BaseSurroundingsListener surroundingsPlaneListener = null;
+    @Nullable
+    private PosePredictionListener posePredictionListener = null;
 
     private static final float ONE_DEGREE_IN_RADIANS = 0.0175f;
 
@@ -89,16 +91,32 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
         this.listener = listener;
     }
 
-    @Override @Nullable
+    @Override
+    @Nullable
     public InteractionListener getListener() {
         return listener;
     }
 
     @Override
-    public void setSurroundingsListener(@Nullable BaseSurroundingsListener listener) { this.surroundingsPlaneListener = listener; }
+    public void setSurroundingsListener(@Nullable BaseSurroundingsListener listener) {
+        this.surroundingsPlaneListener = listener;
+    }
 
-    @Override @Nullable
-    public BaseSurroundingsListener getSurroundingsListener() { return surroundingsPlaneListener; }
+    @Override
+    @Nullable
+    public BaseSurroundingsListener getSurroundingsListener() {
+        return surroundingsPlaneListener;
+    }
+
+    public void setPosePredictionListener(@Nullable PosePredictionListener listener) {
+        this.posePredictionListener = listener;
+    }
+
+    @Nullable
+    public PosePredictionListener getPosePredictionListener() {
+        return posePredictionListener;
+    }
+
 
     // ---------------------------------------------------------------------------------------
     // Other
@@ -176,8 +194,11 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
         }
 
         @Nullable Plane lastArPlaneOld = lastArPlane;
-
         @Nullable Pose intersectionPose = null;
+        @Nullable Pose predictivePose = null;
+        @Nullable Trackable predictiveTrackable = null;
+        boolean isPredictivePoseApplicable = false;
+
         Vector3 position = gesture.getPosition();
         List<HitResult> hitResultList = frame.hitTest(position.x, position.y);
         for (int i = 0; i < hitResultList.size(); i++) {
@@ -186,10 +207,17 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
             Pose pose = hit.getHitPose();
             if (trackable instanceof Plane) {
                 Plane plane = (Plane) trackable;
-                if (allowedPlaneTypes.contains(plane.getType()) && (detectedPlanes.floorPlanes.isFirstPlane(plane) || plane.isPoseInPolygon(pose))) {
+                boolean isPoseValid = detectedPlanes.floorPlanes.isFirstPlane(plane) || plane.isPoseInPolygon(pose);
+                if (isPoseValid) {
+                    predictivePose = pose;
+                    predictiveTrackable = plane;
+                }
+
+                if (isPoseValid && allowedPlaneTypes.contains(plane.getType())) {
                     intersectionPose = pose;
                     lastArHitResult = hit;
                     lastArPlane = plane;
+                    isPredictivePoseApplicable = true;
                     break;
                 }
             }
@@ -200,12 +228,19 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
             if (groundPlane != null) {
                 intersectionPose = PlaneIntersection.intersect(groundPlane, scene.getCamera().screenPointToRay(position.x, position.y), true);
                 if (intersectionPose != null) {
-                    lastArPlane = groundPlane;
+                    predictivePose = intersectionPose;
+                    predictiveTrackable = groundPlane;
+                    if (allowedPlaneTypes.contains(Plane.Type.HORIZONTAL_UPWARD_FACING)) {
+                        isPredictivePoseApplicable = true;
+                        lastArPlane = groundPlane;
+                    } else {
+                        intersectionPose = null;
+                    }
                 }
             }
         }
 
-        if (!lastArPlane.equals(lastArPlaneOld) && null != surroundingsPlaneListener) {
+        if (((lastArPlane == null && lastArPlaneOld != null) || (lastArPlane != null && !lastArPlane.equals(lastArPlaneOld))) && null != surroundingsPlaneListener) {
             surroundingsPlaneListener.onPlaneChanged(getTransformableNode(), lastArPlane);
         }
 
@@ -229,7 +264,11 @@ public class TranslationControllerWithPlaneChange extends TransformationControll
             }
         }
 
-        if (null != listener) {
+        if (posePredictionListener != null) {
+            posePredictionListener.onPosePreviewListener(predictivePose, predictiveTrackable, isPredictivePoseApplicable);
+        }
+
+        if (listener != null) {
             listener.onMovementUpdate(getTransformableNode());
         }
 
